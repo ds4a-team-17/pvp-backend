@@ -11,14 +11,17 @@ MAX_LENGTH = 300
 @dataclass(init=False)
 class Prediction:
     probabilities: dict
-    prediction: str
-    unit: str
+    predictionCubicWeight: str
+    cubicWeightUnit: str
+    predictionVolume: str
+    volumeUnit: str
 
-    def __init__(self, probabilities: dict, prediction: str, unit: str):
+    def __init__(self, probabilities: dict, predictionCubicWeight: str, cubicWeightUnit: str, predictionVolume: str, volumeUnit: str):
         self.probabilities = probabilities
-        self.prediction = prediction
-        self.unit = unit
-
+        self.predictionCubicWeight = predictionCubicWeight
+        self.cubicWeightUnit = cubicWeightUnit
+        self.predictionVolume = predictionVolume
+        self.volumeUnit = volumeUnit
 
 class Predictor:
     def __init__(self, model_file: str, tokenizer_file: str) -> Prediction:
@@ -43,4 +46,6 @@ class Predictor:
         }
         prediction_label = max(probabilities, key=probabilities.get)
 
-        return Prediction(probabilities, prediction_label, "kg")
+        prediction_volume = (prediction_label * 1000) / (0.166) # converting from cubic weight(kg) to volume(cm3)
+
+        return Prediction(probabilities, prediction_label, "kg", prediction_volume, "cm3")
